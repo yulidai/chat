@@ -34,15 +34,19 @@ func (hub *Hub) handler(w http.ResponseWriter, r *http.Request) {
 	hub.register <- newClient(hub, conn)
 }
 
-func (hub *Hub) broadcast(msg string) {
+func (hub *Hub) broadcast(msg string, ignoreClient *Client) {
 	for _, client := range hub.clientList {
-		client.socket.WriteMessage(websocket.TextMessage, []byte("Broadcast: " + msg))
+		if(client == ignoreClient) {
+			continue
+		}
+
+		client.socket.WriteMessage(websocket.TextMessage, []byte(msg))
 	}
 }
 
 func (hub *Hub) onConnect(client *Client) {
 	fmt.Println("On new connect")
-	hub.broadcast("new client is coming in")
+	hub.broadcast("new client is coming in", nil)
 	hub.clientList = append(hub.clientList, client)
 }
 
@@ -61,11 +65,11 @@ func (hub *Hub) onDisconnect(clientLeave *Client) {
 	hub.clientList[len(hub.clientList) - 1] = nil
 	hub.clientList = hub.clientList[:len(hub.clientList) - 1]
 
-	hub.broadcast("old client is leave")
+	hub.broadcast("old client is leave", nil)
 }
 
-func (hub *Hub) onMessage(msg []byte) {
-	hub.broadcast(string(msg))
+func (hub *Hub) onMessage(msg []byte, client *Client) {
+	hub.broadcast(string(msg), client)
 }
 
 func (hub *Hub) run() {

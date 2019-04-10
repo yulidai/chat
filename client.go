@@ -31,7 +31,7 @@ func (client *Client) read() {
 			fmt.Printf("error occured when read message from client: %s", err)
 			break
 		}
-		client.hub.onMessage(msg)
+		client.hub.onMessage(msg, client)
 
 		fmt.Printf("msg: %s\n", msg)
 	}
