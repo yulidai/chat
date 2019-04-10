@@ -64,6 +64,10 @@ func (hub *Hub) onDisconnect(clientLeave *Client) {
 	hub.broadcast("old client is leave")
 }
 
+func (hub *Hub) onMessage(msg []byte) {
+	hub.broadcast(string(msg))
+}
+
 func (hub *Hub) run() {
 	for {
 		select {
