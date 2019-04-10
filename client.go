@@ -25,6 +25,8 @@ func newClient(hub *Hub, socket *websocket.Conn) *Client {
 }
 
 func (client *Client) read() {
+	defer client.hub.onDisconnect(client)
+
 	for {
 		_, msg, err := client.socket.ReadMessage()
 		if err != nil {
