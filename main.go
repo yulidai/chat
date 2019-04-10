@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
 func main() {
-	fmt.Println("Start now!")
-	http.HandleFunc("/ws", Handler)
+	hub := newHub()
+	go hub.run()
+	
+	http.HandleFunc("/ws", hub.handler)
 	http.ListenAndServe("localhost:9191", nil)
 }

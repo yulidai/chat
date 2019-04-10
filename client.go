@@ -7,12 +7,14 @@ import (
 
 type Client struct {
 	id string
+	hub *Hub
 	socket *websocket.Conn
 }
 
-func newClient(socket *websocket.Conn) *Client {
+func newClient(hub *Hub, socket *websocket.Conn) *Client {
 	return &Client {
 		id:     uuid.NewV4().String(),
+		hub:    hub,
 		socket: socket,
 	}
 }
