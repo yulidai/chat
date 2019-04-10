@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="h-full">
+<head>
+	<title>Draw Game Client</title>
+	<link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<style type="text/css">
+		.w-full { width: 100%; }
+
+		.h-full { height: 100%; }
+
+		.c-n { color: #c5cdde; }
+
+		.bg-main { background-color: #232838; }
+		.bg-main.dk, .bg-main .dk { background-color: #191d28 }
+
+		.p-none { padding: 0 !important; }
+		.p-nm { padding: 15px; }
+		.p-md { padding: 20px; }
+		.p-xxl { padding: 30px; }
+
+		.p-b-nm { padding-bottom: 15px; }
+
+		.dsp-inline { display: inline-block; }
+
+		.info {
+			position: relative;
+		}
+		.info-arrow-left {
+			position: absolute;
+			top: 5px;
+			left: -5px;
+
+			width: 0;
+			height: 0;
+			border-color: transparent #cce5ff transparent transparent;
+			border-width: 5px 5px 5px 0;
+			border-style: solid;
+		}
+
+		.info-arrow-right {
+			position: absolute;
+			top: 5px;
+			right: -5px;
+
+			width: 0;
+			height: 0;
+			border-color: transparent transparent transparent #cce5ff;
+			border-width: 5px 0 5px 5px;
+			border-style: solid;
+		}
+
+		.wrap-chat {
+			height: 80%;
+			position: relative;
+
+			overflow: auto;
+		}
+		.wrap-input {
+			height: 20%;
+
+			background-color: #999;
+		}
+
+		.f-l {
+			float: left;
+		}
+
+		.f-r {
+			float: right;
+		}
+
+	</style>
+</head>
+<body class="h-full">
+	<div class="container-fluid bg-main c-n h-full p-none">
+		<div class="wrap-chat p-xxl">
+			<div class="dk p-nm" style="position: fixed; top: 0; left: 0; width: 100%; text-align: center; background-color: rgba(30, 40, 56, 0.6); z-index: 100;">Chat History</div>
+			<div class="p-md"></div>
+		</div>
+		<form class="wrap-input dk">
+			<input id="msg-input" placeholder="chat here..." class="w-full h-full p-nm" />
+		</form>
+	</div>
+
+	<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			let chatHis  = $('.wrap-chat'),
+					msgInput = $('#msg-input'),
+					form     = $('form'),
+					sendBtn  = $('.wrap-input .right')
+			;
+
+			let ws = new WebSocket('ws://localhost:9191/ws');
+			ws.onmessage = msg => {
+				chatHis.append('<div class="info clearfix"><div class="info-arrow-left"></div><div class="alert alert-primary dsp-inline f-l">'+msg.data+'</div></div>')
+				chatHis.scrollTop(chatHis.prop("scrollHeight"))
+			}
+
+			sendBtn.click(sendMsg)
+			form.submit(sendMsg)
+			function sendMsg() {
+				let msg = msgInput.val();
+				msgInput.val('')
+				if(!msg) return false
+
+				ws.send(msg)
+				chatHis.append('<div class="info clearfix"><div class="info-arrow-right"></div><div class="alert alert-success dsp-inline f-r">'+msg+'</div></div>')
+				chatHis.scrollTop(chatHis.prop("scrollHeight"))
+
+				return false;
+			}
+		})
+	</script>
+</body>
+</html>
