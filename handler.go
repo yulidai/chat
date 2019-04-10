@@ -3,21 +3,26 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader {}
+var upgrader = websocket.Upgrader {
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
+var clientList = make([]*Client, 0)
 
-func Handle(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if(err != nil) {
 		fmt.Printf("Error occured: %s", err)
 		return
 	}
 
-	for {
-		conn.WriteMessage(websocket.TextMessage, []byte("hahaha"))
-		time.Sleep(time.Duration(2) * time.Second)
+	// 通知当前 socket
+	for _, c := range clientList {
+		c.socket.WriteMessage(websocket.TextMessage, []byte("new member is coming"))
 	}
+
+	// 添加新 socket
+	clientList = append(clientList, newClient(conn))
 }

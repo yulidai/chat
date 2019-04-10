@@ -7,6 +7,6 @@ import (
 
 func main() {
 	fmt.Println("Start now!")
-	http.HandleFunc("/ws", Handle)
+	http.HandleFunc("/ws", Handler)
 	http.ListenAndServe("localhost:9191", nil)
 }
